@@ -17,7 +17,7 @@
     "hero.step1": "Activa el modo traducción con el botón de la parte superior de la página.",
     "hero.step2": "Mantén pulsada la tecla Mayús y haz clic en cualquier texto resaltado.",
     "hero.step3": "Corrige el texto o elige otro idioma y tradúcelo.",
-    "hero.backendStatic": "Esta copia de la demostración no tiene backend, así que las sugerencias no se guardan.",
+    "hero.backendStatic": "Esta copia de la demostración no tiene backend, así que las sugerencias no se guardan de forma permanente y desaparecerán al volver a cargar la página.",
     "hero.backendPhp": "Esta copia de la demostración usa el backend en PHP. Las sugerencias se escriben directamente en los archivos de traducción JSON.",
     "hero.reset": "Restablecer traducciones",
     "hero.resetDone": "Se han restablecido los archivos de traducción.",

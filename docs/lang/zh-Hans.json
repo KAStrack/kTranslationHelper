@@ -17,7 +17,7 @@
     "hero.step1": "使用页面顶部的按钮开启翻译模式。",
     "hero.step2": "按住 Shift 键并点击任何高亮显示的文字。",
     "hero.step3": "更正文字，或选择其他语言进行翻译。",
-    "hero.backendStatic": "此演示副本没有后端，因此不会保存建议。",
+    "hero.backendStatic": "此演示副本没有后端，因此建议不会永久保存，下次加载页面时就会消失。",
     "hero.backendPhp": "此演示副本使用 PHP 后端。建议会直接写入 JSON 翻译文件。",
     "hero.reset": "重置翻译",
     "hero.resetDone": "翻译文件已重置。",

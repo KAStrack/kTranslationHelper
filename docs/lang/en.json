@@ -17,7 +17,7 @@
     "hero.step1": "Turn on translation mode with the button at the top of the page.",
     "hero.step2": "Hold Shift and click any highlighted text.",
     "hero.step3": "Correct the text, or pick another language and translate it.",
-    "hero.backendStatic": "This copy of the demo has no backend, so suggestions are not saved.",
+    "hero.backendStatic": "This copy of the demo has no backend, so suggestions are not permanently saved and will disappear on the next page load.",
     "hero.backendPhp": "This copy of the demo uses the PHP backend. Suggestions are written straight into the JSON translation files.",
     "hero.reset": "Reset translations",
     "hero.resetDone": "The translation files have been reset.",
