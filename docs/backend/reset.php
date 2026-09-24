@@ -1,9 +1,9 @@
 <?php
 /**
- * Restore demo/lang/*.json from demo/lang/original/.
+ * Restore docs/lang/*.json from docs/lang/original/.
  *
  *   From the page:   the "Reset translations" button (PHP backend only) POSTs here.
- *   From a terminal: php demo/backend/reset.php
+ *   From a terminal: php docs/backend/reset.php
  */
 
 declare(strict_types=1);
@@ -41,7 +41,7 @@ try {
 }
 
 if ($cli) {
-    echo "Translations restored from demo/lang/original/\n";
+    echo "Translations restored from docs/lang/original/\n";
     exit(0);
 }
 respond(200, true, 'The translation files have been reset.');

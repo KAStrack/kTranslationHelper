@@ -4,7 +4,7 @@
  *
  * THIS BACKEND IS FOR LOCAL DEVELOPMENT ONLY. It writes whatever visitors submit straight into
  * the translation files. A production backend should store suggestions for review instead
- * (see docs/index.html → "Writing a backend").
+ * (see docs/docs/index.html → "Writing a backend").
  */
 
 declare(strict_types=1);
@@ -128,7 +128,7 @@ function write_translations(string $path, array $data, array $order): void
     $tmp = $path . '.tmp-' . bin2hex(random_bytes(4));
     if (file_put_contents($tmp, $json) === false || !rename($tmp, $path)) {
         @unlink($tmp);
-        throw new RuntimeException('Could not write ' . basename($path) . '. Is demo/lang writable?');
+        throw new RuntimeException('Could not write ' . basename($path) . '. Is docs/lang writable?');
     }
 }
 

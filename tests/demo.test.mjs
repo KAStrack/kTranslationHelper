@@ -6,7 +6,7 @@
  *   node tests/demo.test.mjs           # or: npm test
  *
  * Starts `php -S` on a free port, runs every check against both demo backends, and restores
- * demo/lang/*.json before and after. Set SHOTS=some/dir to save screenshots.
+ * docs/lang/*.json before and after. Set SHOTS=some/dir to save screenshots.
  * Exits with status 1 if any check fails.
  */
 import { readFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -24,21 +24,21 @@ try {
 }
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const LANG = join(ROOT, 'demo/lang') + '/';
+const LANG = join(ROOT, 'docs/lang') + '/';
 const SHOTS = process.env.SHOTS ? resolve(process.env.SHOTS) + '/' : null;
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const shot = (page, name, opts = {}) => (SHOTS ? page.screenshot({ path: SHOTS + name, ...opts }) : null);
-const resetTranslations = () => execFileSync('php', [join(ROOT, 'demo/backend/reset.php')], { stdio: 'ignore' });
+const resetTranslations = () => execFileSync('php', [join(ROOT, 'docs/backend/reset.php')], { stdio: 'ignore' });
 
 const port = await new Promise((ok) => {
   const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => ok(p)); });
 });
 const ORIGIN = `http://127.0.0.1:${port}`;
-const BASE = `${ORIGIN}/demo/`;
+const BASE = `${ORIGIN}/`;
 
 resetTranslations();
-const php = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', ROOT], { stdio: 'ignore' });
-// Runs on every exit, including an uncaught error, so php -S never lingers and demo/lang/ is restored.
+const php = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', join(ROOT, 'docs')], { stdio: 'ignore' });
+// Runs on every exit, including an uncaught error, so php -S never lingers and docs/lang/ is restored.
 process.on('exit', () => { php.kill(); try { resetTranslations(); } catch (_) { /* php missing */ } });
 for (let i = 0; i < 50; i++) {
   try { await fetch(BASE); break; } catch (_) { await new Promise((r) => setTimeout(r, 100)); }
@@ -51,7 +51,7 @@ const browser = await chromium.launch();
 
 async function newPage(backend, { colorScheme = 'light', viewport = { width: 1280, height: 900 }, hasTouch = false, isMobile = false, reducedMotion = 'no-preference' } = {}) {
   const ctx = await browser.newContext({ colorScheme, viewport, hasTouch, isMobile, reducedMotion });
-  await ctx.route('**/demo/config.js', (r) => r.fulfill({
+  await ctx.route(BASE + 'config.js', (r) => r.fulfill({
     contentType: 'application/javascript',
     body: `window.DEMO_CONFIG = { backend: '${backend}', showKey: false };`,
   }));
@@ -86,7 +86,7 @@ const dlg = (page) => page.locator('[data-ktranslationhelper-ui] dialog').first(
   await page.click('.link', { modifiers: ['Shift'] });
   await page.waitForTimeout(200);
   check('shift+click link opens editor', await dlg(page).evaluate((d) => d.open));
-  check('no navigation', page.url().includes('/demo/'));
+  check('no navigation', new URL(page.url()).pathname === '/');
   check('only one page', ctx.pages().length === 1);
   await page.keyboard.press('Escape');
 
@@ -558,7 +558,7 @@ const dlg = (page) => page.locator('[data-ktranslationhelper-ui] dialog').first(
 /* ---------------- init() in <head>, showBadge: false, getSource returning '' ---------------- */
 {
   const { ctx, page } = await newPage('static');
-  await ctx.route('**/demo/head-init.html', (r) => r.fulfill({ contentType: 'text/html', body: `<!doctype html>
+  await ctx.route(BASE + 'head-init.html', (r) => r.fulfill({ contentType: 'text/html', body: `<!doctype html>
 <html lang="fr"><head>
 <script src="/dist/ktranslationhelper.js"></script>
 <script>
@@ -626,7 +626,7 @@ const dlg = (page) => page.locator('[data-ktranslationhelper-ui] dialog').first(
 }
 {
   const { ctx, page } = await newPage('static');
-  await ctx.route('**/demo/head-count.html', (r) => r.fulfill({ contentType: 'text/html', body: `<!doctype html>
+  await ctx.route(BASE + 'head-count.html', (r) => r.fulfill({ contentType: 'text/html', body: `<!doctype html>
 <html lang="en"><head>
 <script src="/dist/ktranslationhelper.js"></script>
 <script>
@@ -740,7 +740,7 @@ const dlg = (page) => page.locator('[data-ktranslationhelper-ui] dialog').first(
   await page.focus('#l');
   await page.keyboard.press('Shift+F2');
   check('hotkey: false does nothing', !(await dlg(page).evaluate((d) => d.open)));
-  check('type declarations built', existsSync(join(ROOT, 'dist/ktranslationhelper.d.ts')) && existsSync(join(ROOT, 'dist/ktranslationhelper.d.mts')));
+  check('type declarations built', existsSync(join(ROOT, 'docs/dist/ktranslationhelper.d.ts')) && existsSync(join(ROOT, 'docs/dist/ktranslationhelper.d.mts')));
   check('no errors (features)', page.errors.length === 0, page.errors.join(' | '));
   await ctx.close();
 }

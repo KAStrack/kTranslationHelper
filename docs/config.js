@@ -6,9 +6,9 @@
  *              Suggestions are "sent" to static-backend/response.json, which always answers
  *              that nothing was saved.
  *   'php'    — Self-hosted. Suggestions are POSTed to backend/update.php, which writes them
- *              straight into demo/lang/*.json. Run from the project root:
- *                  php -S localhost:8000
- *              then open http://localhost:8000/demo/
+ *              straight into docs/lang/*.json. Run from the project root:
+ *                  php -S localhost:8000 -t docs
+ *              then open http://localhost:8000/
  *
  * showKey: show the translation key in the editor (useful for developers).
  */

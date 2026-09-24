@@ -2,7 +2,7 @@
 /**
  * Writable demo backend for kTranslationHelper.
  *
- * Receives a suggestion from the plugin and writes it straight into demo/lang/<lang>.json.
+ * Receives a suggestion from the plugin and writes it straight into docs/lang/<lang>.json.
  * FOR LOCAL DEVELOPMENT ONLY — see lib.php.
  *
  * Request (JSON, as sent by the plugin with encoding: 'json'):

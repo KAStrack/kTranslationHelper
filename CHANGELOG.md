@@ -79,6 +79,12 @@
   readers, and the "?" button has an accessible name.
 - New `tests/a11y.test.mjs` (axe-core) audits the demo and docs; `npm run test:a11y`.
 
+### Changed
+
+- **Repository layout for GitHub Pages.** The demo moved from `demo/` to `docs/`, the documentation to
+  `docs/docs/`, and the built files from `dist/` to `docs/dist/` (`package.json` entry points updated to
+  match). `node build.mjs` writes to `docs/dist/`; run the demo with `php -S localhost:8000 -t docs`.
+
 ### Fixed
 
 Bug fixes from a code review.

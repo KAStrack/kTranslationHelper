@@ -31,10 +31,10 @@ const port = await new Promise((ok) => {
   const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => ok(p)); });
 });
 const ORIGIN = `http://127.0.0.1:${port}`;
-const php = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', ROOT], { stdio: 'ignore' });
+const php = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', join(ROOT, 'docs')], { stdio: 'ignore' });
 process.on('exit', () => php.kill());
 for (let i = 0; i < 50; i++) {
-  try { await fetch(ORIGIN + '/demo/'); break; } catch (_) { await new Promise((r) => setTimeout(r, 100)); }
+  try { await fetch(ORIGIN + '/'); break; } catch (_) { await new Promise((r) => setTimeout(r, 100)); }
 }
 
 const browser = await chromium.launch();
@@ -45,7 +45,7 @@ const on = async (p) => { await p.click('#kth-toggle'); await p.waitForTimeout(2
 
 async function audit(label, setup, { scheme = 'light', width = 1280 } = {}) {
   const ctx = await browser.newContext({ colorScheme: scheme, viewport: { width, height: 900 } });
-  await ctx.route('**/demo/config.js', (r) => r.fulfill({ contentType: 'application/javascript', body: `window.DEMO_CONFIG = { backend: 'php', showKey: false };` }));
+  await ctx.route(ORIGIN + '/config.js', (r) => r.fulfill({ contentType: 'application/javascript', body: `window.DEMO_CONFIG = { backend: 'php', showKey: false };` }));
   const page = await ctx.newPage();
   page.setDefaultTimeout(10000);
   await setup(page);
@@ -67,22 +67,22 @@ async function audit(label, setup, { scheme = 'light', width = 1280 } = {}) {
   await ctx.close();
 }
 
-await audit('home, mode off', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); });
-await audit('home, mode on', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); });
-await audit('home, mode on, dark', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); }, { scheme: 'dark' });
-await audit('editor open', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); await p.click('#greeting', { modifiers: ['Shift'] }); await p.waitForTimeout(200); });
-await audit('editor, other language, Spanish page', async (p) => { await p.goto(ORIGIN + '/demo/?lang=es'); await ready(p); await on(p); await p.click('[data-i18n="ex.text.item3"]', { modifiers: ['Shift'] }); await p.waitForTimeout(200); await p.locator('[data-ktranslationhelper-ui] dialog select').first().selectOption('fr'); await p.waitForTimeout(200); });
-await audit('editor open, dark', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); await p.click('#greeting', { modifiers: ['Shift'] }); await p.waitForTimeout(200); }, { scheme: 'dark' });
-await audit('list open', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("All text")'); });
-await audit('list open, dark', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("All text")'); }, { scheme: 'dark' });
-await audit('help open', async (p) => { await p.goto(ORIGIN + '/demo/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("Help")'); });
-await audit('about, mode on', async (p) => { await p.goto(ORIGIN + '/demo/about.html?lang=en'); await ready(p); await on(p); });
-await audit('contact, mode on, after submit', async (p) => { await p.goto(ORIGIN + '/demo/contact.html?lang=en'); await ready(p); await on(p); await p.click('button[type=submit][data-i18n]'); });
-await audit('home, Arabic, mode on', async (p) => { await p.goto(ORIGIN + '/demo/?lang=ar'); await ready(p); await on(p); });
-await audit('home, Chinese, dark', async (p) => { await p.goto(ORIGIN + '/demo/?lang=zh-Hans'); await ready(p); await on(p); }, { scheme: 'dark' });
-await audit('home, French (no UI locale), 320px', async (p) => { await p.goto(ORIGIN + '/demo/?lang=fr'); await ready(p); await on(p); }, { width: 320 });
-await audit('about, 320px', async (p) => { await p.goto(ORIGIN + '/demo/about.html?lang=en'); await ready(p); await on(p); }, { width: 320 });
-await audit('contact, 320px', async (p) => { await p.goto(ORIGIN + '/demo/contact.html?lang=en'); await ready(p); await on(p); }, { width: 320 });
+await audit('home, mode off', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); });
+await audit('home, mode on', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); });
+await audit('home, mode on, dark', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); }, { scheme: 'dark' });
+await audit('editor open', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); await p.click('#greeting', { modifiers: ['Shift'] }); await p.waitForTimeout(200); });
+await audit('editor, other language, Spanish page', async (p) => { await p.goto(ORIGIN + '/?lang=es'); await ready(p); await on(p); await p.click('[data-i18n="ex.text.item3"]', { modifiers: ['Shift'] }); await p.waitForTimeout(200); await p.locator('[data-ktranslationhelper-ui] dialog select').first().selectOption('fr'); await p.waitForTimeout(200); });
+await audit('editor open, dark', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); await p.click('#greeting', { modifiers: ['Shift'] }); await p.waitForTimeout(200); }, { scheme: 'dark' });
+await audit('list open', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("All text")'); });
+await audit('list open, dark', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("All text")'); }, { scheme: 'dark' });
+await audit('help open', async (p) => { await p.goto(ORIGIN + '/?lang=en'); await ready(p); await on(p); await p.click('[data-ktranslationhelper-ui] .badge button:has-text("Help")'); });
+await audit('about, mode on', async (p) => { await p.goto(ORIGIN + '/about.html?lang=en'); await ready(p); await on(p); });
+await audit('contact, mode on, after submit', async (p) => { await p.goto(ORIGIN + '/contact.html?lang=en'); await ready(p); await on(p); await p.click('button[type=submit][data-i18n]'); });
+await audit('home, Arabic, mode on', async (p) => { await p.goto(ORIGIN + '/?lang=ar'); await ready(p); await on(p); });
+await audit('home, Chinese, dark', async (p) => { await p.goto(ORIGIN + '/?lang=zh-Hans'); await ready(p); await on(p); }, { scheme: 'dark' });
+await audit('home, French (no UI locale), 320px', async (p) => { await p.goto(ORIGIN + '/?lang=fr'); await ready(p); await on(p); }, { width: 320 });
+await audit('about, 320px', async (p) => { await p.goto(ORIGIN + '/about.html?lang=en'); await ready(p); await on(p); }, { width: 320 });
+await audit('contact, 320px', async (p) => { await p.goto(ORIGIN + '/contact.html?lang=en'); await ready(p); await on(p); }, { width: 320 });
 await audit('docs', async (p) => { await p.goto(ORIGIN + '/docs/'); });
 await audit('docs, dark', async (p) => { await p.goto(ORIGIN + '/docs/'); }, { scheme: 'dark' });
 await audit('docs, 320px', async (p) => { await p.goto(ORIGIN + '/docs/'); }, { width: 320 });
@@ -91,7 +91,7 @@ await audit('docs, 320px', async (p) => { await p.goto(ORIGIN + '/docs/'); }, { 
 {
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await page.goto(ORIGIN + '/demo/?lang=en'); await ready(page); await on(page);
+  await page.goto(ORIGIN + '/?lang=en'); await ready(page); await on(page);
   await page.keyboard.press('Tab'); // from the toggle button to the first highlighted link, as a keyboard user would
   const cs = await page.evaluate(() => {
     const e = document.activeElement; const c = getComputedStyle(e);

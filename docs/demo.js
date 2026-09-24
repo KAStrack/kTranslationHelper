@@ -56,7 +56,7 @@ async function staticSubmit() {
 let uiStrings = {};
 if (LANGUAGES.some((l) => l.code === lang && l.uiLocale)) {
   try {
-    const res = await fetch(`../dist/locales/${lang}.json`);
+    const res = await fetch(`dist/locales/${lang}.json`);
     if (res.ok) uiStrings = await res.json();
   } catch (_) { /* fall back to English */ }
 }

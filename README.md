@@ -39,7 +39,7 @@ correct a mistake in the language they're reading, or add a missing translation 
 </script>
 ```
 
-An ES module build is at `dist/ktranslationhelper.mjs`. See the documentation for every option,
+An ES module build is at `docs/dist/ktranslationhelper.mjs`. See the documentation for every option,
 the payload/response contract and guidance on writing a backend.
 
 ## Running the demo
@@ -47,20 +47,20 @@ the payload/response contract and guidance on writing a backend.
 The demo is a small bakery site with three pages (Home, About, Contact) in English, Spanish, Simplified Chinese
 and Arabic, plus an empty French file. Turn translation mode on and move between the pages: it stays on.
 Switch to French to see the missing count and work through the gaps with **Next missing**.
-Choose its backend in `demo/config.js`:
+The demo lives in `docs/` (served by GitHub Pages). Choose its backend in `docs/config.js`:
 
 | `backend`  | Where it runs | What happens to suggestions |
 |------------|---------------|-----------------------------|
-| `'static'` (default) | Any static host | A callback reads `demo/static-backend/response.json`, which replies that nothing was saved |
-| `'php'` | Your machine | `demo/backend/update.php` writes them straight into `demo/lang/*.json` |
+| `'static'` (default) | Any static host | A callback reads `docs/static-backend/response.json`, which replies that nothing was saved |
+| `'php'` | Your machine | `docs/backend/update.php` writes them straight into `docs/lang/*.json` |
 
 ```sh
 # PHP 8.1+
-php -S localhost:8000
-# then open http://localhost:8000/demo/
+php -S localhost:8000 -t docs
+# then open http://localhost:8000/
 ```
 
-**Reset translations** on the page, or `php demo/backend/reset.php`, restores the files from `demo/lang/original/`.
+**Reset translations** on the page, or `php docs/backend/reset.php`, restores the files from `docs/lang/original/`.
 
 > The PHP backend is for local development only. It rejects requests from public IP addresses and should
 > never be deployed to a public server.
@@ -69,7 +69,7 @@ php -S localhost:8000
 
 ```sh
 npm install --no-save playwright axe-core
-npm test          # end-to-end suite: starts php -S, tests both demo backends, restores demo/lang/
+npm test          # end-to-end suite: starts php -S, tests both demo backends, restores docs/lang/
 npm run test:a11y # WCAG 2.1 AA audit of the demo and docs with axe-core
 ```
 
@@ -78,10 +78,10 @@ npm run test:a11y # WCAG 2.1 AA audit of the demo and docs with axe-core
 ```
 src/ktranslationhelper.js   Source (ES module)
 src/locales/*.json          Interface text translations
-dist/                       Built files: ktranslationhelper.js (classic), .mjs (ES module), locales/
-build.mjs                   node build.mjs — rebuilds dist/ (no dependencies)
-docs/index.html             Documentation
-demo/                       Demo site (3 pages), JSON translations and the two demo backends
+build.mjs                   node build.mjs — rebuilds docs/dist/ (no dependencies)
+docs/                       GitHub Pages root: demo site (3 pages), JSON translations and the two demo backends
+docs/dist/                  Built files: ktranslationhelper.js (classic), .mjs (ES module), locales/
+docs/docs/index.html        Documentation
 tests/demo.test.mjs         End-to-end tests
 CLAUDE.md                   Layout, commands and conventions for contributors (and Claude)
 ```

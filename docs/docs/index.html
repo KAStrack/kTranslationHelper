@@ -107,7 +107,7 @@
       <a href="#limits">Limits</a>
       <a href="#support">Browser support</a>
     </nav>
-    <a class="demo-link" href="../demo/">Open the demo →</a>
+    <a class="demo-link" href="../">Open the demo →</a>
   </aside>
 
   <main id="top" tabindex="-1">
@@ -201,7 +201,7 @@ document.querySelector('#suggest-translations')
 <pre role="group" aria-label="Code example" tabindex="0"><code>allowHtml: true                                   <span class="c">// every string</span>
 allowHtml: (el, key) =&gt; el.hasAttribute('data-i18n-html')  <span class="c">// per element</span></code></pre>
     <p>For HTML strings the editor shows and edits <code>innerHTML</code>, and the payload has <code>html: true</code>.</p>
-    <div class="warn"><p><strong>Your backend must sanitise HTML suggestions.</strong> Anyone who can open the editor can submit anything. Allow a short list of tags and attributes and check link URLs — see <code>demo/backend/lib.php</code> for an example. Note that with the default <code>updateInPlace: 'always'</code> the visitor's raw HTML is written into their own page before your backend answers (it affects nobody else); return the sanitised <code>text</code> in the response and the plugin shows that instead, or use <code>'success'</code>.</p></div>
+    <div class="warn"><p><strong>Your backend must sanitise HTML suggestions.</strong> Anyone who can open the editor can submit anything. Allow a short list of tags and attributes and check link URLs — see <code>docs/backend/lib.php</code> for an example. Note that with the default <code>updateInPlace: 'always'</code> the visitor's raw HTML is written into their own page before your backend answers (it affects nobody else); return the sanitised <code>text</code> in the response and the plugin shows that instead, or use <code>'success'</code>.</p></div>
 
     <!-- ================================================================== -->
     <h2 id="options">Options</h2>
@@ -388,7 +388,7 @@ $pdo-&gt;prepare('INSERT INTO translation_suggestions (tkey, lang, text, origina
                $in['comment'] ?? null, $_SESSION['user_id']]);
 
 echo json_encode(['ok' =&gt; true, 'message' =&gt; 'Thanks! A reviewer will look at your suggestion.']);</code></pre>
-    <p>The demo ships two backends you can read: <code>demo/static-backend/</code> (always answers that nothing was saved) and <code>demo/backend/</code> (PHP, writes straight into the JSON files, for local use only).</p>
+    <p>The demo ships two backends you can read: <code>docs/static-backend/</code> (always answers that nothing was saved) and <code>docs/backend/</code> (PHP, writes straight into the JSON files, for local use only).</p>
     <div class="note"><p>With the default <code>updateInPlace: 'always'</code>, the page shows the new text as soon as it is submitted. If suggestions go to a review queue, you may prefer <code>'success'</code> or <code>false</code> so visitors don't think the change is already live. The <em>suggested</em> mark (<code>suggestedAttribute</code>) tells them which strings they have already sent.</p></div>
 
     <!-- ================================================================== -->
@@ -502,25 +502,25 @@ kTranslationHelper.init({ …, strings, uiLanguage: lang });</code></pre>
 
     <!-- ================================================================== -->
     <h2 id="demo">Running the demo</h2>
-    <p>The demo is a small bakery site with three pages — <strong>Home</strong> (eleven numbered examples), <strong>About</strong> and <strong>Contact</strong> — in English, Spanish, Simplified Chinese and Arabic (right-to-left), plus French with an empty file so you can try building a language from scratch. Two Spanish strings are deliberately missing. Translations are plain JSON files in <code>demo/lang/</code>.</p>
+    <p>The demo is a small bakery site with three pages — <strong>Home</strong> (eleven numbered examples), <strong>About</strong> and <strong>Contact</strong> — in English, Spanish, Simplified Chinese and Arabic (right-to-left), plus French with an empty file so you can try building a language from scratch. Two Spanish strings are deliberately missing. Translations are plain JSON files in <code>docs/lang/</code>.</p>
     <p>Turn translation mode on and move between the pages: it stays on, the instruction message isn't repeated, and the editor keeps the language you last translated into. The About page shares its image's alt-text key with the home page, so fixing it on one page fixes both.</p>
-    <p>Pick the backend in <code>demo/config.js</code>:</p>
+    <p>The demo lives in the repository's <code>docs/</code> folder. Pick the backend in <code>docs/config.js</code>:</p>
 <pre role="group" aria-label="Code example" tabindex="0"><code>window.DEMO_CONFIG = {
   backend: 'static',   <span class="c">// 'static' — any static host; nothing is saved</span>
-                       <span class="c">// 'php'    — writes suggestions into demo/lang/*.json</span>
+                       <span class="c">// 'php'    — writes suggestions into docs/lang/*.json</span>
   showKey: false,
 };</code></pre>
     <h3>Static (no backend)</h3>
-    <p>Upload the whole project folder to any static host and open <code>/demo/</code>. Suggestions get the reply <em>"The demo page does not have a backend, so updates are not saved."</em></p>
+    <p>Upload the <code>docs/</code> folder to any static host (it is what GitHub Pages serves) and open it. Suggestions get the reply <em>"The demo page does not have a backend, so updates are not saved."</em></p>
     <h3>PHP (full demo)</h3>
 <pre role="group" aria-label="Code example" tabindex="0"><code><span class="c"># PHP 8.1+ with the json and dom extensions (both usually built in)</span>
 cd ktranslationhelper
-php -S localhost:8000
-<span class="c"># open http://localhost:8000/demo/ — after setting backend: 'php'</span></code></pre>
-    <p>Suggestions are written straight into the JSON files. <em>Reset translations</em> on the page (or <code>php demo/backend/reset.php</code>) restores them from <code>demo/lang/original/</code>.</p>
+php -S localhost:8000 -t docs
+<span class="c"># open http://localhost:8000/ — after setting backend: 'php'</span></code></pre>
+    <p>Suggestions are written straight into the JSON files. <em>Reset translations</em> on the page (or <code>php docs/backend/reset.php</code>) restores them from <code>docs/lang/original/</code>.</p>
     <h3>Tests</h3>
 <pre role="group" aria-label="Code example" tabindex="0"><code>npm install --no-save playwright axe-core
-node tests/demo.test.mjs      <span class="c"># starts its own php -S, runs both backends, restores demo/lang/</span>
+node tests/demo.test.mjs      <span class="c"># starts its own php -S, runs both backends, restores docs/lang/</span>
 node tests/a11y.test.mjs      <span class="c"># WCAG 2.1 AA audit of the demo and docs with axe-core</span></code></pre>
     <div class="warn"><p>The PHP backend is for trying things out on your own machine. It only answers requests from localhost or private network addresses (a check that any reverse proxy defeats, since it sees the proxy's address) and from its own pages (<code>Sec-Fetch-Site</code> / <code>Origin</code>, so another website open in your browser can't write to the files), and must not be deployed on a public server.</p></div>
 
