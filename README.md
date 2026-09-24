@@ -18,7 +18,7 @@ correct a mistake in the language they're reading, or add a missing translation 
 - The plugin's own UI is isolated in a Shadow DOM, follows the page's light/dark theme, is themeable with
   CSS variables and translatable (`es`, `zh-Hans`, `ar` included). TypeScript declarations included.
 
-📖 **Documentation:** [`docs/index.html`](docs/index.html) · 🧪 **Demo:** [`demo/index.html`](demo/index.html)
+📖 **Documentation:** [`https://kastrack.github.io/kTranslationHelper/docs`](https://kastrack.github.io/kTranslationHelper/docs/) · 🧪 **Demo:** [`https://kastrack.github.io/kTranslationHelper`](https://kastrack.github.io/kTranslationHelper/)
 
 ## Quick start
 
