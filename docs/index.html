@@ -1,541 +1,234 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>kTranslationHelper documentation</title>
-  <meta name="description" content="kTranslationHelper lets visitors flag and fix missing or incorrect translations on multi-language websites.">
-  <style>
-    :root {
-      --bg: #fbfaf7; --surface: #fff; --text: #1d1b16; --muted: #6a655a; --line: #e6e1d6;
-      --accent: #2f5bd3; --accent-soft: #e8eefc; --brand-amber: #b45309; --code-bg: #f3f1ec; --warn: #fff6d6; --warn-line: #e8c65a; --req: #b42318;
-      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #15171b; --surface: #1c1f25; --text: #e9e6df; --muted: #a29d92; --line: #30353e;
-        --accent: #86a8ff; --accent-soft: #232c44; --brand-amber: #fbbf24; --code-bg: #22262d; --warn: #332b10; --warn-line: #8a6d17; --req: #ff8f86;
-      }
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 20px; }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.65 var(--font); }
-    a { color: var(--accent); }
-    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; }
-    aside {
-      position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto;
-      padding: 28px 20px; border-inline-end: 1px solid var(--line);
-    }
-    .brand { display: inline-flex; align-items: baseline; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -.02em; margin-bottom: 4px; }
-    .brand-k { color: var(--accent); }
-    .brand-word { color: var(--text); }
-    .brand-accent { color: var(--brand-amber); }
-    .version { color: var(--muted); font-size: 13px; margin: 0 0 20px 2px; }
-    aside nav a { display: block; color: var(--muted); text-decoration: none; padding: 4px 8px; border-radius: 6px; font-size: 15px; }
-    aside nav a:hover { color: var(--text); background: var(--code-bg); }
-    aside nav .sub { padding-inline-start: 20px; font-size: 14px; }
-    aside .demo-link { display: inline-block; margin-top: 18px; font-weight: 600; }
-    main { padding: 40px 48px 96px; min-width: 0; }
-    h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -.02em; overflow-wrap: anywhere; }
-    h2 { font-size: 26px; margin: 56px 0 12px; padding-top: 32px; letter-spacing: -.01em; border-top: 1px solid var(--line); }
-    h3 { font-size: 19px; margin: 32px 0 8px; }
-    .lead { font-size: 19px; color: var(--muted); max-width: 64ch; margin-top: 0; }
-    p, li { max-width: 72ch; }
-    code { font: 0.9em var(--mono); background: var(--code-bg); padding: 1px 5px; border-radius: 5px; }
-    pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow: auto; font: 13.5px/1.55 var(--mono); }
-    pre:focus-visible, .tbl:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    pre code { background: none; padding: 0; font: inherit; }
-    .c { color: var(--muted); }
-    .tbl { overflow-x: auto; margin: 12px 0 8px; }
-    table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
-    th, td { text-align: start; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
-    th { font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
-    td:first-child { white-space: nowrap; }
-    td:first-child code { font-weight: 600; }
-    .req { font-size: 11px; font-weight: 700; color: var(--req); text-transform: uppercase; margin-inline-start: 6px; letter-spacing: .03em; }
-    .note { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; max-width: 72ch; }
-    .warn { background: var(--warn); border: 1px solid var(--warn-line); border-radius: 10px; padding: 12px 16px; max-width: 72ch; }
-    .note p, .warn p { margin: 0; }
-    .flow { counter-reset: f; list-style: none; padding: 0; display: grid; gap: 10px; max-width: 72ch; }
-    .flow li { counter-increment: f; display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-    .flow li::before { content: counter(f); flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 14px; }
-    .flow .who { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-inline-start: 6px; }
-    .checklist li { margin-bottom: 4px; }
-    .skip { position: absolute; inset-inline-start: 8px; top: -100px; z-index: 10; background: var(--surface); color: var(--accent); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-weight: 600; }
-    .skip:focus { top: 8px; }
-    main:focus { outline: none; }
-    @media (max-width: 860px) {
-      .layout { grid-template-columns: 1fr; }
-      aside { position: static; height: auto; border-inline-end: 0; border-bottom: 1px solid var(--line); padding: 20px 16px; }
-      aside nav { display: flex; flex-wrap: wrap; gap: 2px 4px; }
-      aside nav .sub { display: none; }
-      main { padding: 28px 16px 64px; }
-      h1 { font-size: 32px; }
-    }
-  </style>
+  <title data-i18n="page.title">kTranslationHelper demo</title>
+  <!-- Before the first paint: apply the saved language and direction, and hide the page until
+       demo.js has rendered it (with a timeout, in case scripts are blocked). -->
+  <script>
+    (function () {
+      var l = new URLSearchParams(location.search).get('lang');
+      try { l = l || localStorage.getItem('demo:lang'); } catch (e) { /* storage blocked */ }
+      if (l) { document.documentElement.lang = l; document.documentElement.dir = /^(ar|he|fa|ur)\b/.test(l) ? 'rtl' : 'ltr'; }
+      var t = null;
+      try { t = localStorage.getItem('demo:theme'); } catch (e) { /* storage blocked */ }
+      if (!t || t === 'auto') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.classList.add('loading');
+      setTimeout(function () { document.documentElement.classList.remove('loading'); }, 2000);
+    })();
+  </script>
+  <link rel="stylesheet" href="demo.css">
+
+  <!-- 1. Pick the demo backend ('static' or 'php') -->
+  <script src="config.js"></script>
+  <!-- 2. The plugin itself (classic script build, exposes window.kTranslationHelper) -->
+  <script src="../dist/ktranslationhelper.js"></script>
+  <!-- 3. The demo "app": a tiny i18n layer plus the plugin configuration -->
+  <script type="module" src="demo.js"></script>
 </head>
-<body>
-<a class="skip" href="#top">Skip to content</a>
-<div class="layout">
-  <aside>
-    <a class="brand" href="#top"><span class="brand-k">k</span><span class="brand-word">Translation</span><span class="brand-accent">Helper</span></a>
-    <p class="version">v0.1.2 · MIT</p>
-    <nav>
-      <a href="#overview">Overview</a>
-      <a href="#quick-start">Quick start</a>
-      <a href="#flow">How it works</a>
-      <a href="#markup">Marking up text</a>
-      <a class="sub" href="#attributes">Attributes</a>
-      <a class="sub" href="#languages">Languages</a>
-      <a class="sub" href="#html">HTML strings</a>
-      <a href="#options">Options</a>
-      <a href="#get-source">Raw strings (getSource)</a>
-      <a href="#submitting">Submitting</a>
-      <a class="sub" href="#payload">Payload</a>
-      <a class="sub" href="#response">Response</a>
-      <a href="#backend">Writing a backend</a>
-      <a href="#activation">Activation &amp; persistence</a>
-      <a href="#touch">Touch screens</a>
-      <a href="#keyboard">Keyboard</a>
-      <a href="#drafts">Drafts &amp; suggested marks</a>
-      <a href="#strings">Interface text</a>
-      <a href="#theming">Theming</a>
-      <a href="#api">API &amp; events</a>
-      <a href="#demo">Running the demo</a>
-      <a href="#limits">Limits</a>
-      <a href="#support">Browser support</a>
-    </nav>
-    <a class="demo-link" href="../demo/">Open the demo →</a>
-  </aside>
+<body data-page="home">
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="index.html"><span class="brand-k">k</span><span class="brand-word">Translation</span><span class="brand-accent">Helper</span></a>
+      <nav class="nav">
+        <a href="index.html" aria-current="page" data-i18n="nav.home">Home</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="contact.html" data-i18n="nav.contact">Contact</a>
+        <a href="../docs/" data-i18n="nav.docs">Documentation</a>
+      </nav>
+      <div class="controls">
+        <label class="lang-picker">
+          <span class="sr-only" data-i18n="header.language">Language</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.9 8ZM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.08 16Zm2.95-8H5.08a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.03 8ZM12 19.96A14.1 14.1 0 0 1 10.09 16h3.82A14.1 14.1 0 0 1 12 19.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>
+          <select id="lang-select"></select>
+        </label>
+        <button id="theme-btn" class="theme" type="button" data-i18n-attr="title:header.theme" title="Theme">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20V2Z"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span data-i18n="header.themeAuto">Auto</span>
+        </button>
+        <button id="kth-toggle" class="toggle" type="button" aria-pressed="false" data-i18n-attr="title:header.toggleHint" title="Keyboard shortcut: Alt + T">
+          <span class="switch" aria-hidden="true"></span>
+          <span data-i18n="header.toggle">Translation mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
-  <main id="top" tabindex="-1">
-    <h1>kTranslationHelper</h1>
-    <p class="lead">A dependency-free JavaScript plugin that lets visitors of a multi-language website flag and fix translations: correct a mistake in the language they're reading, or add a missing translation for any language you support.</p>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Live demo</p>
+        <h1 data-i18n="hero.title">Help us translate this page</h1>
+        <p class="lead" data-i18n="hero.lead">This page is available in several languages. Turn on translation mode, then hold Shift and click any highlighted text to correct it or translate it into another language.</p>
+        <ol class="steps">
+          <li data-i18n="hero.step1">Turn on translation mode with the button at the top of the page.</li>
+          <li data-i18n="hero.step2">Hold Shift and click any highlighted text.</li>
+          <li data-i18n="hero.step3">Correct the text, or pick another language and translate it.</li>
+        </ol>
+        <div class="backend" id="backend-note">
+          <span class="backend-badge" id="backend-name">static</span>
+          <span id="backend-text" data-i18n="hero.backendStatic">This copy of the demo has no backend, so suggestions are not saved.</span>
+          <button type="button" class="btn small" id="reset-btn" hidden data-i18n="hero.reset">Reset translations</button>
+          <span id="reset-done" class="reset-done" hidden data-i18n="hero.resetDone">The translation files have been reset.</span>
+          <span id="reset-error" class="reset-error" hidden></span>
+        </div>
+      </div>
+    </section>
 
-    <!-- ================================================================== -->
-    <h2 id="overview">Overview</h2>
-    <p>kTranslationHelper is for sites that are <em>already</em> translated. Each translatable element carries its translation key in an attribute. When the helper is active, those elements are highlighted; the visitor holds <kbd>Shift</kbd> and clicks one, edits the text in a dialog, and the suggestion is sent to a URL (or function) you provide.</p>
-    <p>The plugin handles: highlighting, the trigger, the editor dialog, language selection, placeholder checks, submitting, and remembering state between pages. Your app handles:</p>
-    <ul>
-      <li><strong>Activation</strong> — a button, menu item or keyboard shortcut that calls <code>helper.toggle()</code>. Show it to the people you want suggesting translations, but treat that as convenience, not access control: anyone can turn the mode on from the browser console or by editing <code>localStorage</code>, so your backend must decide whose suggestions to accept.</li>
-      <li><strong>Storage</strong> — the backend that receives suggestions and decides what to do with them (queue for review, apply directly, open a ticket …).</li>
-      <li><strong>Rendering</strong> — your existing i18n layer. The helper never needs to know how you load translations; it can optionally ask for raw strings via <a href="#get-source"><code>getSource</code></a>.</li>
-    </ul>
+    <section id="examples" class="examples">
+      <div class="wrap">
+        <h2 data-i18n="ex.title">Examples</h2>
+        <div class="grid">
 
-    <!-- ================================================================== -->
-    <h2 id="quick-start">Quick start</h2>
-    <h3>1. Include the script</h3>
-    <p>Use the classic build (adds <code>window.kTranslationHelper</code>) or the ES module. No build step or dependencies.</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>&lt;script src="dist/ktranslationhelper.js"&gt;&lt;/script&gt;
-<span class="c">&lt;!-- or --&gt;</span>
-&lt;script type="module"&gt;
-  import kTranslationHelper from './dist/ktranslationhelper.mjs';
-&lt;/script&gt;</code></pre>
+          <!-- 1. Plain text -->
+          <article class="card">
+            <span class="num" aria-hidden="true">1</span>
+            <h3 data-i18n="ex.text.title">Plain text</h3>
+            <p data-i18n="ex.text.body">Headings, paragraphs and list items are the simplest case. Each element carries its translation key in a data-i18n attribute.</p>
+            <ul class="ticks">
+              <li data-i18n="ex.text.item1">Fresh bread every morning</li>
+              <li data-i18n="ex.text.item2">Free delivery on orders over €30</li>
+              <li data-i18n="ex.text.item3">Open seven days a week</li>
+            </ul>
+          </article>
 
-    <h3>2. Mark up translatable text</h3>
-    <p>Most i18n setups already output something like this. Use whichever attribute name you like.</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>&lt;html lang="es"&gt;
-…
-&lt;h1 data-i18n="home.title"&gt;Bienvenido&lt;/h1&gt;
-&lt;input type="search" data-i18n-attr="placeholder:search.placeholder" placeholder="Buscar…"&gt;</code></pre>
+          <!-- 2. Links and buttons -->
+          <article class="card">
+            <span class="num" aria-hidden="true">2</span>
+            <h3 data-i18n="ex.links.title">Links and buttons</h3>
+            <p data-i18n="ex.links.body">Links and buttons keep working as normal. Only Shift + click opens the editor, so you can keep browsing while translation mode is on.</p>
+            <div class="row">
+              <a class="link" href="../docs/" data-i18n="ex.links.link">Read the documentation</a>
+              <button type="button" class="btn primary" id="basket-btn" data-i18n="ex.links.button">Add to basket</button>
+            </div>
+            <p class="muted" id="basket-count" data-i18n="ex.links.counter" data-i18n-vars='{"count":0}'>Items in your basket: 0</p>
+          </article>
 
-    <h3>3. Initialise and give users a way to turn it on</h3>
-    <p>Call <code>init()</code> anywhere — in <code>&lt;head&gt;</code>, at the end of the page or from a module. Its interface is added to <code>&lt;body&gt;</code> as soon as that exists.</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>const helper = kTranslationHelper.init({
-  keyAttribute: 'data-i18n',          <span class="c">// required</span>
-  defaultLanguage: 'en',              <span class="c">// required</span>
-  languages: ['en', 'es', 'de', { code: 'ar', name: 'العربية', dir: 'rtl' }],
-  submitUrl: '/api/translation-suggestions',
-});
+          <!-- 3. Placeholders -->
+          <article class="card">
+            <span class="num" aria-hidden="true">3</span>
+            <h3 data-i18n="ex.vars.title">Text with placeholders</h3>
+            <p data-i18n="ex.vars.body">Some strings contain placeholders that the app fills in. The editor shows the raw template and warns you if a placeholder goes missing.</p>
+            <label class="field">
+              <span data-i18n="ex.vars.nameLabel">Your name</span>
+              <input type="text" id="name-input" value="Alex" autocomplete="off">
+            </label>
+            <p class="bubble-text" id="greeting" data-i18n="ex.vars.greeting" data-i18n-vars='{"name":"Alex","count":3}'>Hello Alex, you have 3 new messages.</p>
+          </article>
 
-document.querySelector('#suggest-translations')
-  .addEventListener('click', () =&gt; helper.toggle());</code></pre>
-    <p>That's it. Once a visitor turns it on, it stays on as they move between pages until they press <strong>Exit</strong> on the badge (or your app calls <code>helper.deactivate()</code>).</p>
+          <!-- 4. Attributes -->
+          <article class="card">
+            <span class="num" aria-hidden="true">4</span>
+            <h3 data-i18n="ex.attrs.title">Attributes</h3>
+            <p data-i18n="ex.attrs.body">Placeholders, tooltips and image descriptions can be translated too. Shift + click the search field, the help button or the picture.</p>
+            <label class="field">
+              <span data-i18n="ex.attrs.searchLabel">Search</span>
+              <span class="search-row">
+                <input type="search" data-i18n-attr="placeholder:ex.attrs.searchPlaceholder" placeholder="Search our products…">
+                <button type="button" class="icon-btn" data-i18n-attr="title:ex.attrs.helpTitle; aria-label:ex.attrs.helpTitle" title="Tips for searching" aria-label="Tips for searching">?</button>
+              </span>
+            </label>
+            <img class="photo" src="img/bread.svg" width="320" height="140" data-i18n-attr="alt:ex.attrs.imageAlt" alt="A loaf of sourdough bread on a wooden board">
+          </article>
 
-    <!-- ================================================================== -->
-    <h2 id="flow">How it works</h2>
-    <ol class="flow">
-      <li><div>The visitor turns on translation mode.<span class="who">your app</span></div></li>
-      <li><div>Every translatable element is outlined, a badge appears in the corner, and a short instruction message is shown (once per session by default). <em>Help</em> on the badge explains the colours and the steps below, worded for your configuration.<span class="who">plugin</span></div></li>
-      <li><div>The visitor holds <kbd>Shift</kbd> and clicks some text. Normal clicks still work, so links and buttons keep working while the mode is on. On touch screens, a long press does the same.<span class="who">plugin</span></div></li>
-      <li><div>A dialog shows the current text, the original (source-language) text, and a <em>Translate to</em> list that remembers the last language chosen. If that differs from the page's language a clear notice says so, with a one-click switch back. The proposal is pre-filled with the current text.<span class="who">plugin</span></div></li>
-      <li><div>On submit the suggestion is POSTed to <code>submitUrl</code> (or passed to your <code>submit</code> function), and the result message is shown. If the edit was in the page's language, the text on the page is updated straight away (<code>updateInPlace</code>). When the string was a missing translation and others remain, a <em>Next missing</em> button takes the translator to the next one.<span class="who">plugin</span></div></li>
-      <li><div>Your backend stores or applies the suggestion.<span class="who">your app</span></div></li>
-    </ol>
-    <p>The two everyday uses both follow this flow: <strong>correcting</strong> a mistake (leave the language as it is and edit), and <strong>adding</strong> a missing translation — for an existing language or one you're just starting (choose the language, then type).</p>
+          <!-- 5. Several strings on one element -->
+          <article class="card">
+            <span class="num" aria-hidden="true">5</span>
+            <h3 data-i18n="ex.nested.title">Several strings in one place</h3>
+            <p data-i18n="ex.nested.body">This button has a label and a tooltip. When you Shift + click it, the editor asks which one you want to translate.</p>
+            <button type="button" class="btn" data-i18n-attr="title:ex.nested.tooltip" title="Saves your changes without publishing them">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4Zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm3-10H5V5h10v4Z"/></svg>
+              <span data-i18n="ex.nested.button">Save draft</span>
+            </button>
+          </article>
 
-    <!-- ================================================================== -->
-    <h2 id="markup">Marking up translatable text</h2>
-    <h3 id="attributes">Attributes</h3>
-    <div class="tbl" role="group" aria-label="Attributes" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Example markup</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td><code>keyAttribute</code><span class="req">required</span></td><td><code>&lt;p data-i18n="cart.empty"&gt;</code></td><td>The element's text is translatable, and this is its key.</td></tr>
-        <tr><td><code>attrMapAttribute</code></td><td><code>&lt;input data-i18n-attr="placeholder:form.email; title:form.email.tip"&gt;</code></td><td>Translatable <em>attributes</em> — placeholders, tooltips, <code>alt</code> text, <code>aria-label</code> … Pairs of <code>attribute:key</code> separated by <code>;</code>.</td></tr>
-        <tr><td><code>missingAttribute</code></td><td><code>&lt;p data-i18n="cart.empty" data-i18n-missing&gt;</code></td><td>Set this when your app rendered a fallback because the string isn't translated yet. The element is outlined in red and the editor says so.</td></tr>
-        <tr><td><code>langAttribute</code></td><td><code>&lt;section data-locale="de"&gt;</code></td><td>Where to read an element's language from, if not the standard <code>lang</code> attribute. Ancestors are searched.</td></tr>
-      </tbody>
-    </table></div>
-    <p>Attributes whose value is code are never editable, whatever the mapping says: event handlers (<code>onclick</code> …), <code>style</code>, <code>srcdoc</code>, <code>formaction</code> and <code>is</code>. URL attributes such as <code>href</code> and <code>src</code> are left out too unless you set <code>allowUrlAttributes: true</code> — most translators are not developers and shouldn't be asked to edit them — and even then a <code>javascript:</code>, <code>data:</code> or <code>vbscript:</code> value is not applied to the page. Your backend must still validate every attribute value it stores.</p>
-    <p>When an element has more than one string — a button with a label and a tooltip, or translatable text inside a translatable parent — the editor shows a <em>Text to translate</em> picker. Text that can't be clicked (<code>&lt;option&gt;</code>s, collapsed sections, the page <code>&lt;title&gt;</code>) is reachable from <strong>All text</strong> on the badge, which lists every string on the page and lets you filter.</p>
+          <!-- 6. HTML -->
+          <article class="card">
+            <span class="num" aria-hidden="true">6</span>
+            <h3 data-i18n="ex.html.title">Formatted text</h3>
+            <p data-i18n="ex.html.body">HTML can be allowed for individual strings. This sentence contains a link and bold text, and the editor lets you edit the markup.</p>
+            <p class="boxed" data-i18n="ex.html.sentence" data-i18n-html>By placing an order you agree to our <a href="#terms">terms of sale</a> and our <strong>privacy policy</strong>.</p>
+          </article>
 
-    <h3 id="languages">Languages</h3>
-    <p>The language of the clicked text is resolved in this order:</p>
-    <ol>
-      <li>the nearest element with <code>langAttribute</code>, if you set that option;</li>
-      <li>the nearest standard <code>lang</code> attribute (usually <code>&lt;html lang&gt;</code>), unless <code>useLangAttribute: false</code>;</li>
-      <li><code>defaultLanguage</code>.</li>
-    </ol>
-    <p>So a quote in <code>&lt;blockquote lang="es"&gt;</code> on an English page is correctly treated as Spanish. <code>languages</code> is the list offered in <em>Translate to</em>; leave it out and only the page's language can be edited (corrections only). Each entry is a code or an object:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>languages: [
-  'en',                                     <span class="c">// name from Intl.DisplayNames ("English"), dir detected</span>
-  { code: 'zh-Hans', name: '简体中文' },
-  { code: 'ar', name: 'العربية', dir: 'rtl' }, <span class="c">// the text box switches to right-to-left</span>
-]</code></pre>
-    <p><code>sourceLanguage</code> (defaults to <code>defaultLanguage</code>) is the language your strings are written in; when <code>getSource</code> is set its text is shown as <em>Original</em> for reference.</p>
+          <!-- 7. Dynamic content -->
+          <article class="card">
+            <span class="num" aria-hidden="true">7</span>
+            <h3 data-i18n="ex.dynamic.title">Content added later</h3>
+            <p data-i18n="ex.dynamic.body">Highlighting is done with CSS, so text that appears after the page has loaded is highlighted automatically.</p>
+            <button type="button" class="btn" id="notify-btn" data-i18n="ex.dynamic.button">Add a notification</button>
+            <div class="notices" id="notices" aria-live="polite"></div>
+          </article>
 
-    <h3 id="html">HTML strings</h3>
-    <p>By default everything is plain text: the plugin reads <code>textContent</code> and never inserts markup. Set <code>allowHtml</code> to let visitors edit markup:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>allowHtml: true                                   <span class="c">// every string</span>
-allowHtml: (el, key) =&gt; el.hasAttribute('data-i18n-html')  <span class="c">// per element</span></code></pre>
-    <p>For HTML strings the editor shows and edits <code>innerHTML</code>, and the payload has <code>html: true</code>.</p>
-    <div class="warn"><p><strong>Your backend must sanitise HTML suggestions.</strong> Anyone who can open the editor can submit anything. Allow a short list of tags and attributes and check link URLs — see <code>demo/backend/lib.php</code> for an example. Note that with the default <code>updateInPlace: 'always'</code> the visitor's raw HTML is written into their own page before your backend answers (it affects nobody else); return the sanitised <code>text</code> in the response and the plugin shows that instead, or use <code>'success'</code>.</p></div>
+          <!-- 8. Hidden text -->
+          <article class="card">
+            <span class="num" aria-hidden="true">8</span>
+            <h3 data-i18n="ex.hidden.title">Hidden text</h3>
+            <p data-i18n="ex.hidden.body">Some text is hard to click, such as dropdown options, collapsed sections and the page title. Use “All text” on the translation badge to find it.</p>
+            <details class="details">
+              <summary data-i18n="ex.hidden.summary">Delivery details</summary>
+              <p data-i18n="ex.hidden.details">We deliver between 8am and 6pm. You will get a text message an hour before we arrive.</p>
+            </details>
+            <label class="field">
+              <span data-i18n="ex.hidden.selectLabel">Delivery speed</span>
+              <select>
+                <option data-i18n="ex.hidden.optStandard">Standard (3–5 days)</option>
+                <option data-i18n="ex.hidden.optExpress">Express (next day)</option>
+              </select>
+            </label>
+          </article>
 
-    <!-- ================================================================== -->
-    <h2 id="options">Options</h2>
-    <p>Pass these to <code>kTranslationHelper.init()</code>. <code>kTranslationHelper.defaults</code> holds the defaults.</p>
+          <!-- 9. Mixed languages -->
+          <article class="card">
+            <span class="num" aria-hidden="true">9</span>
+            <h3 data-i18n="ex.mixed.title">Mixed languages</h3>
+            <p data-i18n="ex.mixed.body">This quote is always shown in Spanish, whatever language the page is in. Its lang attribute tells the helper which language it is correcting.</p>
+            <figure class="quote">
+              <blockquote lang="es" dir="auto" data-i18n="ex.mixed.quote">Caminante, no hay camino, se hace camino al andar.</blockquote>
+              <figcaption>— Antonio Machado</figcaption>
+            </figure>
+          </article>
 
-    <h3>What is translatable</h3>
-    <div class="tbl" role="group" aria-label="What is translatable" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>keyAttribute</code><span class="req">required</span></td><td>—</td><td>Attribute holding the translation key.</td></tr>
-        <tr><td><code>attrMapAttribute</code></td><td><code>null</code></td><td>Attribute mapping element attributes to keys. See <a href="#attributes">Attributes</a>.</td></tr>
-        <tr><td><code>missingAttribute</code></td><td><code>null</code></td><td>Attribute your app sets on fallback text. Also enables the missing count on the badge, the <em>Missing only</em> filter and <em>Next missing</em>.</td></tr>
-        <tr><td><code>ignoreSelector</code></td><td><code>null</code></td><td>Elements matching this selector, or inside one, are left alone: no highlighting, no editor, not listed. E.g. <code>'[data-i18n-ignore]'</code>.</td></tr>
-        <tr><td><code>canEdit</code></td><td><code>null</code></td><td><code>(element, key, attribute) =&gt; boolean</code> to exclude individual strings. CSS can't call it, so the outline stays; use <code>ignoreSelector</code> when the text should not be highlighted either.</td></tr>
-        <tr><td><code>allowUrlAttributes</code></td><td><code>false</code></td><td>Offer URL attributes (<code>href</code>, <code>src</code>, <code>action</code> …) mapped with <code>attrMapAttribute</code> for editing, e.g. links to localised pages. Off by default: they are confusing for non-developers, and a wrong value breaks the page. See <a href="#attributes">Attributes</a>.</td></tr>
-      </tbody>
-    </table></div>
+          <!-- 10. Missing translations -->
+          <article class="card">
+            <span class="num" aria-hidden="true">10</span>
+            <h3 data-i18n="ex.missing.title">Missing translations</h3>
+            <p data-i18n="ex.missing.body">When a string has not been translated, this demo shows the English text instead and marks it in red. Switch to Spanish to see two missing strings, or to French to see a language that has not been translated yet.</p>
+            <div class="legend">
+              <span><i class="swatch ok"></i> data-i18n</span>
+              <span><i class="swatch missing"></i> data-i18n-missing</span>
+            </div>
+          </article>
 
-    <h3>Languages</h3>
-    <div class="tbl" role="group" aria-label="Languages" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>defaultLanguage</code><span class="req">required</span></td><td>—</td><td>Language present when nothing else says otherwise.</td></tr>
-        <tr><td><code>languages</code></td><td><code>null</code></td><td>Languages offered in <em>Translate to</em>.</td></tr>
-        <tr><td><code>langAttribute</code></td><td><code>null</code></td><td>Custom attribute that holds an element's language.</td></tr>
-        <tr><td><code>useLangAttribute</code></td><td><code>true</code></td><td>Fall back to the nearest <code>lang</code> attribute.</td></tr>
-        <tr><td><code>sourceLanguage</code></td><td><code>defaultLanguage</code></td><td>Language shown as <em>Original</em>.</td></tr>
-        <tr><td><code>rememberLanguage</code></td><td><code>true</code></td><td>Pre-select the last language chosen in <em>Translate to</em>, even if that suggestion wasn't sent. Stored in <code>localStorage</code>, whatever <code>persist</code> is.</td></tr>
-      </tbody>
-    </table></div>
+          <!-- 11. Across pages -->
+          <article class="card">
+            <span class="num" aria-hidden="true">11</span>
+            <h3 data-i18n="ex.pages.title">Across pages</h3>
+            <p data-i18n="ex.pages.body">Translation mode stays on as you move around the site, and the editor remembers the last language you translated into. Try the other pages:</p>
+            <div class="row">
+              <a class="link" href="about.html" data-i18n="ex.pages.about">About our bakery</a>
+              <a class="link" href="contact.html" data-i18n="ex.pages.contact">Contact us</a>
+            </div>
+          </article>
 
-    <h3>Interaction</h3>
-    <div class="tbl" role="group" aria-label="Interaction" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>trigger</code></td><td><code>'shift+click'</code></td><td>Modifier keys plus click: <code>'alt+click'</code>, <code>'ctrl+shift+click'</code>, <code>'mod+click'</code> (Cmd on Mac, Ctrl elsewhere), <code>'click'</code>, or a function <code>(event) =&gt; boolean</code>. Avoid <code>ctrl</code> alone on Mac (it's a right-click) and <code>alt</code> alone on links (it downloads them).</td></tr>
-        <tr><td><code>hotkey</code></td><td><code>'shift+f2'</code></td><td>Keyboard shortcut that opens the editor for the focused translatable text, or the text under the mouse. Same modifier names as <code>trigger</code> plus a key (<code>'mod+shift+e'</code>); <code>false</code> disables it. See <a href="#keyboard">Keyboard</a>.</td></tr>
-        <tr><td><code>longPress</code></td><td><code>true</code></td><td>Press and hold on touch screens opens the editor.</td></tr>
-        <tr><td><code>longPressDelay</code></td><td><code>550</code></td><td>Milliseconds to hold.</td></tr>
-        <tr><td><code>message</code></td><td><code>null</code></td><td>Replace the instruction message (otherwise it's generated from the trigger and <code>strings</code>).</td></tr>
-        <tr><td><code>showMessage</code></td><td><code>'session'</code></td><td>When to show the instruction: <code>'always'</code>, <code>'session'</code> (once per browser session, and whenever the visitor turns the mode on), <code>'once'</code> (the first time ever, remembered in <code>localStorage</code>), or <code>false</code>.</td></tr>
-      </tbody>
-    </table></div>
+          <!-- 12. Excluded text -->
+          <article class="card">
+            <span class="num" aria-hidden="true">12</span>
+            <h3 data-i18n="ex.ignore.title">Excluded text</h3>
+            <p data-i18n="ex.ignore.body">Some text must not be changed here, such as legal wording. The plugin leaves it alone: no highlighting, no editor.</p>
+            <p class="boxed legal" data-i18n="ex.ignore.notice" data-i18n-ignore>Prices include VAT. Offers are subject to availability. Only the legal team may change this notice.</p>
+          </article>
 
-    <h3>Editor</h3>
-    <div class="tbl" role="group" aria-label="Editor" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>prefill</code></td><td><code>'current'</code></td><td>What goes in the text box: <code>'current'</code> (the text as it is now), <code>'blank'</code>, <code>'target'</code> (the existing translation in the chosen language, if any), or <code>(context) =&gt; string</code>.</td></tr>
-        <tr><td><code>allowHtml</code></td><td><code>false</code></td><td><code>true</code>, <code>false</code> or <code>(element, key) =&gt; boolean</code>. See <a href="#html">HTML strings</a>.</td></tr>
-        <tr><td><code>showKey</code></td><td><code>false</code></td><td>Show the translation key in the editor and list. Handy for developers; most translators don't need it.</td></tr>
-        <tr><td><code>review</code></td><td><code>true</code></td><td>Whether suggestions go to a reviewer. Set <code>false</code> when your backend applies them directly: the comment box disappears, the button reads <em>Save</em> instead of <em>Submit for review</em> (<em>Apply</em> in local mode), and the help text says "saved" rather than "sent for review". The labels are the <code>submit</code>, <code>save</code> and <code>apply</code> strings.</td></tr>
-        <tr><td><code>showComment</code></td><td><code>true</code></td><td>Show an optional comment box for the reviewer. Only shown when <code>review</code> is true and there is a backend.</td></tr>
-        <tr><td><code>placeholderPattern</code></td><td><code>/\{\{?\s*[\w.-]+\s*\}\}?|%(?:\d+\$)?[sdif]/g</code></td><td>Placeholders to look for (<code>{name}</code>, <code>{{name}}</code>, <code>%s</code>, <code>%1$s</code> …). The editor warns if the proposal drops one. <code>null</code> turns the check off.</td></tr>
-        <tr><td><code>maxLength</code></td><td><code>null</code></td><td>Shows a character counter under the text box and refuses longer suggestions. Counted in code points, like PHP's <code>mb_strlen</code>.</td></tr>
-        <tr><td><code>getSource</code></td><td><code>null</code></td><td><code>async (key, lang) =&gt; string | null</code>. See <a href="#get-source">Raw strings</a>.</td></tr>
-      </tbody>
-    </table></div>
-
-    <h3>Submitting</h3>
-    <div class="tbl" role="group" aria-label="Submitting" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>submitUrl</code></td><td><code>null</code></td><td>URL that receives suggestions. With neither this nor <code>submit</code> the plugin runs in <a href="#local">local mode</a>.</td></tr>
-        <tr><td><code>submit</code></td><td><code>null</code></td><td><code>async (payload) =&gt; result</code>. Used instead of the built-in <code>fetch</code>.</td></tr>
-        <tr><td><code>method</code></td><td><code>'POST'</code></td><td>HTTP method. It must allow a request body: <code>init()</code> refuses <code>GET</code> and <code>HEAD</code>.</td></tr>
-        <tr><td><code>encoding</code></td><td><code>'json'</code></td><td><code>'json'</code> or <code>'form'</code> (<code>application/x-www-form-urlencoded</code>, handy for PHP's <code>$_POST</code>).</td></tr>
-        <tr><td><code>headers</code></td><td><code>null</code></td><td>Object, or <code>async (payload) =&gt; object</code> — e.g. a CSRF token read at submit time.</td></tr>
-        <tr><td><code>credentials</code></td><td><code>'same-origin'</code></td><td>Passed to <code>fetch</code>.</td></tr>
-        <tr><td><code>buildPayload</code></td><td><code>null</code></td><td><code>(payload, { element }) =&gt; payload</code> — add or change fields, e.g. a user id or a translation namespace read from the element.</td></tr>
-        <tr><td><code>updateInPlace</code></td><td><code>'always'</code></td><td>Change the page after an edit in the page's language, updating every element with that key (using the <code>text</code> your backend returned, if it did — see <a href="#response">Response</a>). <code>'always'</code> does it whatever the backend answers, so the visitor sees their change even when nothing was saved; <code>'success'</code> only when it answers ok; <code>false</code> never. Strings containing placeholders are skipped, since only your app can fill them in. A function <code>({ elements, key, attribute, text, html, lang, pageLang, ok, result }) =&gt; void | false</code> does it itself: it is called after every submit and for every language (<code>elements</code> is empty when <code>lang</code> isn't the page's), and can return <code>false</code> to say it applied nothing.</td></tr>
-        <tr><td><code>suggestedAttribute</code></td><td><code>'data-kth-suggested'</code></td><td>Set on text the visitor has already suggested a translation for during this browser session (green outline, <em>suggested</em> tag in the list, a note in the editor). <code>null</code> disables it.</td></tr>
-        <tr><td><code>closeDelay</code></td><td><code>1200</code></td><td>How long the success message shows before the dialog closes. <code>0</code> keeps it open.</td></tr>
-      </tbody>
-    </table></div>
-
-    <h3>Persistence</h3>
-    <div class="tbl" role="group" aria-label="Persistence" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>persist</code></td><td><code>'localStorage'</code></td><td>Where "translation mode is on" is remembered: <code>'localStorage'</code>, <code>'sessionStorage'</code>, <code>'cookie'</code> or <code>false</code>. (<code>rememberLanguage</code> and <code>showMessage: 'once'</code> always use <code>localStorage</code>.)</td></tr>
-        <tr><td><code>storageKey</code></td><td><code>'kTranslationHelper'</code></td><td>Prefix for storage keys (and the cookie name).</td></tr>
-        <tr><td><code>cookieDays</code></td><td><code>null</code></td><td>Cookie lifetime; <code>null</code> is a session cookie.</td></tr>
-        <tr><td><code>autoActivate</code></td><td><code>true</code></td><td>Turn on at page load if it was on before.</td></tr>
-      </tbody>
-    </table></div>
-
-    <h3>Interface</h3>
-    <div class="tbl" role="group" aria-label="Interface" tabindex="0"><table>
-      <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>showBadge</code></td><td><code>true</code></td><td>The floating badge with Pick text / All text / Help / Exit. The instruction message and the "sent" toast are still shown. If you hide the badge, make sure your app offers another way out.</td></tr>
-        <tr><td><code>showPick</code></td><td><code>true</code></td><td>The <em>Pick text</em> button.</td></tr>
-        <tr><td><code>showList</code></td><td><code>true</code></td><td>The <em>All text</em> button.</td></tr>
-        <tr><td><code>showHelp</code></td><td><code>true</code></td><td>The <em>Help</em> button: a legend of the outline colours and a short "how it works", both put together from this configuration (trigger keys, hotkey, touch, languages, placeholders, HTML, drafts, local mode or backend, review, persistence).</td></tr>
-        <tr><td><code>strings</code></td><td><code>{}</code></td><td>Interface text overrides. See <a href="#strings">Interface text</a>.</td></tr>
-        <tr><td><code>uiLanguage</code></td><td><code>'en'</code></td><td>Language of the interface text (BCP 47). Set it with <code>strings</code> from a locale file so screen readers pronounce the plugin's own text correctly.</td></tr>
-        <tr><td><code>theme</code></td><td><code>'auto'</code></td><td><code>'auto'</code> follows the page's own <code>color-scheme</code> (so a site's light/dark switch is respected), falling back to the operating system setting; <code>'light'</code> or <code>'dark'</code> force one.</td></tr>
-        <tr><td><code>zIndex</code></td><td><code>2147483000</code></td><td>z-index of the badge. (Dialogs use the browser's top layer.)</td></tr>
-        <tr><td><code>nonce</code></td><td><code>null</code></td><td>Nonce for the plugin's <code>&lt;style&gt;</code> elements on pages with a strict Content Security Policy. Defaults to the nonce of the <code>&lt;script&gt;</code> that loaded the classic build. See <a href="#csp">Content Security Policy</a>.</td></tr>
-      </tbody>
-    </table></div>
-
-    <!-- ================================================================== -->
-    <h2 id="get-source">Raw strings (getSource)</h2>
-    <p>What's on the page isn't always the string you store. <code>"Hello {name}, you have {count} messages"</code> is rendered as <em>"Hello Ben, you have 3 messages"</em>; if the editor used that, a translator would save "Ben" and "3" into the translation. Give the plugin a way to fetch the raw string and it uses it everywhere instead:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>getSource: async (key, lang) =&gt; {
-  <span class="c">// Return the stored string, or null if there is none (not translated yet).</span>
-  return myI18n.getRaw(key, lang) ?? null;
-},</code></pre>
-    <p>It's called for the page's language (the <em>Current text</em>), the <code>sourceLanguage</code> (the <em>Original</em>), and the chosen <em>Translate to</em> language (<em>Existing translation</em>). Results are cached per page; call <code>helper.clearCache()</code> if your translations reload. Without <code>getSource</code> the plugin falls back to the element's text and the <em>Original</em> and <em>Existing</em> fields aren't shown.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="submitting">Submitting</h2>
-    <p>Either give a URL, or a function. A function is useful for GraphQL, custom auth, queuing offline, or — as the demo does — a static host with no server at all:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code><span class="c">// A static JSON file can't receive a POST, so GET it instead.</span>
-submit: async (payload) =&gt; {
-  const res = await fetch('static-backend/response.json');
-  return res.json();  <span class="c">// { "ok": false, "message": "The demo page does not have a backend …" }</span>
-},</code></pre>
-
-    <h3 id="local">Local mode (no backend)</h3>
-    <p>Leave out both <code>submitUrl</code> and <code>submit</code> and nothing is sent: submitting applies the text to the page and shows <em>"Applied to this page only. It will be lost when the page is reloaded."</em> Useful for trying wording, for a static demo, or while the backend is still being written. <code>onSubmit</code> still fires, with <code>result.local === true</code>.</p>
-    <p>With a backend, <code>updateInPlace: 'always'</code> (the default) gives visitors the same instant feedback even when it answers <code>ok: false</code>; their change is only in their browser until it is reloaded.</p>
-
-    <h3 id="payload">Payload</h3>
-    <div class="tbl" role="group" aria-label="Payload" tabindex="0"><table>
-      <thead><tr><th>Field</th><th>Example</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>key</code></td><td><code>"cart.empty"</code></td><td>Translation key.</td></tr>
-        <tr><td><code>lang</code></td><td><code>"fr"</code></td><td>Language the text is <em>in</em> — the one chosen in <em>Translate to</em>.</td></tr>
-        <tr><td><code>text</code></td><td><code>"Votre panier est vide"</code></td><td>The suggested text (trimmed).</td></tr>
-        <tr><td><code>attribute</code></td><td><code>null</code> / <code>"placeholder"</code></td><td>Set when the string came from an attribute mapping.</td></tr>
-        <tr><td><code>html</code></td><td><code>false</code></td><td>Whether the string was edited as HTML.</td></tr>
-        <tr><td><code>pageLang</code></td><td><code>"es"</code></td><td>Language of the text that was clicked, as the page declares it. <code>lang</code> is one of your <code>languages</code> codes when one matches, so compare primary subtags: on an <code>en-GB</code> page with <code>languages: ['en']</code>, a correction arrives as <code>lang: "en"</code>, <code>pageLang: "en-GB"</code>. Without <code>languages</code> (or when none matches) <code>lang</code> is the page's own code, <code>"en-GB"</code>.</td></tr>
-        <tr><td><code>sourceLang</code></td><td><code>"en"</code></td><td>The configured source language.</td></tr>
-        <tr><td><code>original</code></td><td><code>"Tu cesta está vacía"</code></td><td>The text before editing, in <code>pageLang</code> (the raw string, if <code>getSource</code> is set). It is not the <code>sourceLang</code> text.</td></tr>
-        <tr><td><code>comment</code></td><td><code>""</code></td><td>The visitor's optional comment.</td></tr>
-        <tr><td><code>url</code></td><td><code>"https://…/cart"</code></td><td>Page the suggestion was made on — useful context for reviewers. The fragment (<code>#…</code>) is left out, since it can carry tokens; add <code>location.hash</code> in <code>buildPayload</code> if your app routes with it.</td></tr>
-      </tbody>
-    </table></div>
-
-    <h3 id="response">Response</h3>
-    <p>Reply with JSON:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>{ "ok": true,  "message": "Thanks! A reviewer will look at it." }
-{ "ok": true,  "message": "Saved.", "text": "Votre panier est &lt;strong&gt;vide&lt;/strong&gt;" }
-{ "ok": false, "message": "That language isn't open for suggestions yet." }</code></pre>
-    <p>The request counts as successful when the HTTP status is 2xx and <code>ok</code> isn't <code>false</code>. If you changed the text before storing it (sanitised HTML, trimmed whitespace …), return it as <code>text</code>: the plugin then shows that on the page rather than what was typed. <code>message</code> is shown to the visitor (a default is used if it's missing), so write it in their language if you can — <code>payload.pageLang</code> tells you which. A <code>submit</code> function can return the same object, <code>true</code>/<code>undefined</code> (success), <code>false</code> (failure) or a string (a success message); throwing counts as failure.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="backend">Writing a backend</h2>
-    <p>The backend is yours to write, and it should match how your translations are stored. Some guidance:</p>
-    <div class="note"><p><strong>Queue suggestions for review rather than applying them directly.</strong> The editor can be opened by anyone who can turn translation mode on. Store suggestions with who made them and when, and let a trusted person accept them. Apply directly only for trusted, signed-in translators.</p></div>
-    <h3>Checklist</h3>
-    <ul class="checklist">
-      <li>Authenticate and authorise the request; use CSRF protection (the <code>headers</code> option can send your token).</li>
-      <li>Check <code>lang</code> against a list of allowed languages — never build a file path from it directly.</li>
-      <li>Only accept keys that exist in your source language.</li>
-      <li>Limit the text length and strip control characters.</li>
-      <li>Sanitise HTML for keys that allow it; treat every other key as plain text and render it with <code>textContent</code> or proper escaping.</li>
-      <li>Rate-limit per user or IP.</li>
-      <li>Return <code>{ ok, message }</code> JSON with a sensible HTTP status, plus <code>text</code> if you altered the string.</li>
-    </ul>
-    <h3>Minimal example (PHP, review queue)</h3>
-<pre role="group" aria-label="Code example" tabindex="0"><code>&lt;?php
-<span class="c">// POST /api/translation-suggestions — stores suggestions for review.</span>
-session_start();
-header('Content-Type: application/json');
-
-$in = json_decode(file_get_contents('php://input'), true) ?: [];
-$languages = ['en', 'es', 'de', 'ar'];
-
-<span class="c">// CSRF: only our own pages may post here (or check a token sent with the `headers` option).</span>
-if (strtolower($_SERVER['HTTP_SEC_FETCH_SITE'] ?? 'same-origin') !== 'same-origin') { http_response_code(403); exit(json_encode(['ok' =&gt; false, 'message' =&gt; 'Forbidden.'])); }
-if (empty($_SESSION['user_id'])) { http_response_code(401); exit(json_encode(['ok' =&gt; false, 'message' =&gt; 'Please sign in.'])); }
-if (!in_array($in['lang'] ?? '', $languages, true) || !is_string($in['key'] ?? null) || !is_string($in['text'] ?? null)
-    || mb_strlen($in['text']) &gt; 2000) {
-    http_response_code(422); exit(json_encode(['ok' =&gt; false, 'message' =&gt; 'Invalid suggestion.']));
-}
-
-$pdo-&gt;prepare('INSERT INTO translation_suggestions (tkey, lang, text, original, page_url, comment, user_id, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, NOW())')
-    -&gt;execute([$in['key'], $in['lang'], trim($in['text']), $in['original'] ?? null, $in['url'] ?? null,
-               $in['comment'] ?? null, $_SESSION['user_id']]);
-
-echo json_encode(['ok' =&gt; true, 'message' =&gt; 'Thanks! A reviewer will look at your suggestion.']);</code></pre>
-    <p>The demo ships two backends you can read: <code>demo/static-backend/</code> (always answers that nothing was saved) and <code>demo/backend/</code> (PHP, writes straight into the JSON files, for local use only).</p>
-    <div class="note"><p>With the default <code>updateInPlace: 'always'</code>, the page shows the new text as soon as it is submitted. If suggestions go to a review queue, you may prefer <code>'success'</code> or <code>false</code> so visitors don't think the change is already live. The <em>suggested</em> mark (<code>suggestedAttribute</code>) tells them which strings they have already sent.</p></div>
-
-    <!-- ================================================================== -->
-    <h2 id="activation">Activation &amp; persistence</h2>
-    <p>Turning the mode on is up to your app — you decide who sees the button:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>button.addEventListener('click', () =&gt; helper.toggle());
-
-<span class="c">// Optional keyboard shortcut</span>
-addEventListener('keydown', (e) =&gt; {
-  if (e.altKey &amp;&amp; e.code === 'KeyT') { e.preventDefault(); helper.toggle(); }
-});
-
-<span class="c">// Keep your button in sync, including when it's re-enabled on page load</span>
-kTranslationHelper.init({ …, onActivate: () =&gt; setPressed(true), onDeactivate: () =&gt; setPressed(false) });</code></pre>
-    <p>While active, the state is saved (in <code>localStorage</code> by default), so the helper turns itself back on as the visitor moves around the site. They leave with <strong>Exit</strong> on the badge, your button, or <code>helper.deactivate()</code>. Use <code>persist: 'cookie'</code> if your server needs to know (for example to render extra attributes or skip caching), or <code>persist: false</code> to switch persistence off.</p>
-    <p>While active, <code>&lt;html&gt;</code> gets the class <code>kth-active</code> (plus <code>kth-mod</code> while the trigger keys are held, and <code>kth-picking</code> in pick mode), which you can use in your own CSS.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="touch">Touch screens</h2>
-    <p>Touch screens have no Shift key, so there are two alternatives, both on by default:</p>
-    <ul>
-      <li><strong>Long press</strong> on highlighted text opens the editor (the system's text-selection menu is suppressed on highlighted text while active). Configure with <code>longPress</code> and <code>longPressDelay</code>.</li>
-      <li><strong>Pick text</strong> on the badge: the next tap or click on translatable text opens the editor, then normal browsing resumes. Esc cancels. Your app can call <code>helper.pick()</code> too.</li>
-    </ul>
-
-    <!-- ================================================================== -->
-    <h2 id="keyboard">Keyboard</h2>
-    <p>Visitors who don't use a mouse can press the <code>hotkey</code> (<kbd>Shift</kbd> + <kbd>F2</kbd> by default) while a translatable element has focus — a link, a button, a form field with a translatable placeholder — to open the editor for it. With the mouse over some text and nothing translatable focused, the hotkey opens that text instead. The instruction message mentions it. Set <code>hotkey: false</code> to turn it off, or choose another combination such as <code>'mod+shift+e'</code>.</p>
-    <p>Inside the editor, <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> submits and <kbd>Esc</kbd> closes. Everything else — <em>All text</em>, the filters, <em>Next missing</em> — is an ordinary button.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="drafts">Drafts &amp; suggested marks</h2>
-    <p>Closing the editor with an unsent edit keeps it as a draft for that string and language until the page is reloaded. Opening the same string again restores it, with a <em>Discard</em> link. There is no "are you sure?" dialog.</p>
-    <p>Once a suggestion has been sent (accepted by the backend, shown on the page by <code>updateInPlace</code>, or applied in local mode), the plugin sets <code>suggestedAttribute</code> on the elements that show it (a green outline), tags it <em>suggested</em> in <em>All text</em>, and says so at the top of the editor if it is opened again. This is remembered for the browser session (<code>sessionStorage</code>), so it survives moving between pages.</p>
-    <p>With <code>missingAttribute</code> set, the badge shows how many strings on the page are still fallbacks, <em>All text</em> has a <em>Missing only</em> filter, and after filling in a gap the editor stays open with a <em>Next missing</em> button that scrolls to and opens the next one. "Missing" means the page language's gaps; gaps in other languages need <code>getSource</code> and are not counted.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="strings">Interface text</h2>
-    <p>The plugin's own interface is in English by default. Override any string with <code>strings</code>; ready-made translations are in <code>dist/locales/</code> (<code>es</code>, <code>zh-Hans</code>, <code>ar</code>, plus <code>en.json</code> as a template for new ones):</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>const strings = await fetch(`/js/ktranslationhelper/locales/${lang}.json`).then((r) =&gt; r.json());
-kTranslationHelper.init({ …, strings, uiLanguage: lang });</code></pre>
-    <p>Strings can contain <code>{placeholders}</code>: <code>{keys}</code> in <code>message</code> and <code>messageHotkey</code>, <code>{count}</code> and <code>{max}</code> in the counters, <code>{lang}</code>, <code>{target}</code>, <code>{page}</code> and <code>{list}</code> elsewhere. Language names in <code>{lang}</code>, <code>{target}</code> and <code>{page}</code> are given in the page's language ("Alemán" on a Spanish page), and the <em>Translate to</em> list shows both that and the language's own name ("Alemán (Deutsch)"). <code>kTranslationHelper.strings</code> lists every key. New locale files are very welcome as contributions.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="theming">Theming</h2>
-    <p>The badge and dialogs live in a Shadow DOM, so your site's CSS can't break them and theirs can't leak out. Adjust them with CSS custom properties on <code>:root</code>. Both light and dark defaults are built in; which one is used follows the <code>theme</code> option (by default the page's <code>color-scheme</code>, then the OS setting).</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>:root {
-  <span class="c">/* Highlighting on the page */</span>
-  --kth-highlight: #cf6a00;       <span class="c">/* outline of translatable text */</span>
-  --kth-highlight-ring: rgba(207, 106, 0, .22);
-  --kth-missing: #e11d48;         <span class="c">/* outline of text with missingAttribute */</span>
-  --kth-suggested: #16a34a;       <span class="c">/* outline of text already suggested this session */</span>
-  --kth-focus: #1d4ed8;           <span class="c">/* keyboard focus ring on highlighted text */</span>
-  --kth-focus-gap: #fff;
-
-  <span class="c">/* Badge and dialogs */</span>
-  --kth-accent: #2563eb;  --kth-accent-text: #fff;
-  --kth-bg: #fff;  --kth-text: #1f2328;  --kth-muted: #59636e;
-  --kth-border: #d1d9e0;  --kth-soft: #f6f8fa;
-  --kth-warn-bg: #fff8c5;  --kth-warn-text: #6b4f00;
-  --kth-error: #cf222e;  --kth-success: #1a7f37;
-  --kth-font: system-ui, sans-serif;
-}</code></pre>
-    <p>The defaults meet WCAG 2.1 AA: text at 4.5:1 and outlines at 3:1 on light and dark backgrounds. If you change them, keep those ratios. The three states also differ in outline style, not just colour: translatable text is dashed, missing text dotted and suggested text double, so they can be told apart without colour vision. Keyboard focus on highlighted text gets its own ring (<code>--kth-focus</code>) so it stays visible under the highlight.</p>
-    <p>The badge sits at the inline end of the viewport (bottom-right on left-to-right pages, bottom-left on right-to-left ones) and the dialogs follow the page's direction.</p>
-    <p>When a string is chosen from <em>All text</em> or with <em>Next missing</em>, the page scrolls to it and its outline pulses for a second (class <code>kth-flash</code>).</p>
-    <p>Highlighting uses <code>outline</code>, so it doesn't shift your layout, and CSS attribute selectors, so content added after page load is highlighted automatically and frameworks like React or Vue can re-render freely.</p>
-    <h3 id="csp">Content Security Policy</h3>
-    <p>The plugin adds two <code>&lt;style&gt;</code> elements: one to <code>&lt;head&gt;</code> for the highlighting and one inside its Shadow DOM. A policy with <code>style-src</code> but no <code>'unsafe-inline'</code> blocks both, and the plugin then shows no highlighting and an unstyled badge. Give it your nonce: the classic build picks it up from its own <code>&lt;script nonce="…"&gt;</code> tag automatically; the ES module (or a script loaded another way) needs <code>nonce: '…'</code> in the options. Nothing else needs an exception — the plugin uses no inline scripts, no <code>eval</code> and no inline <code>style</code> attributes.</p>
-
-    <!-- ================================================================== -->
-    <h2 id="api">API &amp; events</h2>
-    <h3>kTranslationHelper</h3>
-    <div class="tbl" role="group" aria-label="kTranslationHelper" tabindex="0"><table>
-      <tbody>
-        <tr><td><code>init(options)</code></td><td>Create a helper and return it. Throws if a required option is missing.</td></tr>
-        <tr><td><code>version</code></td><td>Plugin version.</td></tr>
-        <tr><td><code>defaults</code></td><td>Default options.</td></tr>
-        <tr><td><code>strings</code></td><td>Default (English) interface text.</td></tr>
-      </tbody>
-    </table></div>
-    <h3>Instance methods</h3>
-    <div class="tbl" role="group" aria-label="Instance methods" tabindex="0"><table>
-      <tbody>
-        <tr><td><code>activate()</code></td><td>Turn translation mode on.</td></tr>
-        <tr><td><code>deactivate()</code></td><td>Turn it off and forget the saved state.</td></tr>
-        <tr><td><code>toggle(force?)</code></td><td>Switch on/off, or set with a boolean.</td></tr>
-        <tr><td><code>isActive()</code></td><td><code>true</code> while on.</td></tr>
-        <tr><td><code>pick()</code></td><td>Arm pick mode (activates if needed).</td></tr>
-        <tr><td><code>list()</code></td><td>Open the list of all translatable text.</td></tr>
-        <tr><td><code>help()</code></td><td>Open the help dialog (legend and how it works).</td></tr>
-        <tr><td><code>open(target)</code></td><td>Open the editor for an element, or for <code>{ key, attribute?, element? }</code> — e.g. from your own "report a translation problem" link.</td></tr>
-        <tr><td><code>close()</code></td><td>Close the editor.</td></tr>
-        <tr><td><code>clearCache()</code></td><td>Forget strings cached from <code>getSource</code>.</td></tr>
-        <tr><td><code>destroy()</code></td><td>Deactivate and remove everything the plugin added.</td></tr>
-      </tbody>
-    </table></div>
-    <h3>Events</h3>
-    <p>Pass these as options. <code>this</code> is the helper instance.</p>
-    <div class="tbl" role="group" aria-label="Events" tabindex="0"><table>
-      <tbody>
-        <tr><td><code>onActivate({ auto })</code></td><td>Turned on. <code>auto</code> is <code>true</code> when re-enabled on page load.</td></tr>
-        <tr><td><code>onDeactivate()</code></td><td>Turned off.</td></tr>
-        <tr><td><code>onOpen({ key, attribute, element, lang })</code></td><td>Editor opened.</td></tr>
-        <tr><td><code>onClose()</code></td><td>Editor closed.</td></tr>
-        <tr><td><code>onBeforeSubmit(payload)</code></td><td>Return <code>false</code> to cancel.</td></tr>
-        <tr><td><code>onSubmit(result, payload)</code></td><td>Suggestion accepted by the backend (or applied in local mode: <code>result.local</code>). A good place to refresh your own translation cache; <code>result.text</code> is the stored text when the backend returned one.</td></tr>
-        <tr><td><code>onError(errorOrResult, payload)</code></td><td>Network error, non-2xx response, or <code>ok: false</code>.</td></tr>
-      </tbody>
-    </table></div>
-
-    <!-- ================================================================== -->
-    <h2 id="demo">Running the demo</h2>
-    <p>The demo is a small bakery site with three pages — <strong>Home</strong> (eleven numbered examples), <strong>About</strong> and <strong>Contact</strong> — in English, Spanish, Simplified Chinese and Arabic (right-to-left), plus French with an empty file so you can try building a language from scratch. Two Spanish strings are deliberately missing. Translations are plain JSON files in <code>demo/lang/</code>.</p>
-    <p>Turn translation mode on and move between the pages: it stays on, the instruction message isn't repeated, and the editor keeps the language you last translated into. The About page shares its image's alt-text key with the home page, so fixing it on one page fixes both.</p>
-    <p>Pick the backend in <code>demo/config.js</code>:</p>
-<pre role="group" aria-label="Code example" tabindex="0"><code>window.DEMO_CONFIG = {
-  backend: 'static',   <span class="c">// 'static' — any static host; nothing is saved</span>
-                       <span class="c">// 'php'    — writes suggestions into demo/lang/*.json</span>
-  showKey: false,
-};</code></pre>
-    <h3>Static (no backend)</h3>
-    <p>Upload the whole project folder to any static host and open <code>/demo/</code>. Suggestions get the reply <em>"The demo page does not have a backend, so updates are not saved."</em></p>
-    <h3>PHP (full demo)</h3>
-<pre role="group" aria-label="Code example" tabindex="0"><code><span class="c"># PHP 8.1+ with the json and dom extensions (both usually built in)</span>
-cd ktranslationhelper
-php -S localhost:8000
-<span class="c"># open http://localhost:8000/demo/ — after setting backend: 'php'</span></code></pre>
-    <p>Suggestions are written straight into the JSON files. <em>Reset translations</em> on the page (or <code>php demo/backend/reset.php</code>) restores them from <code>demo/lang/original/</code>.</p>
-    <h3>Tests</h3>
-<pre role="group" aria-label="Code example" tabindex="0"><code>npm install --no-save playwright axe-core
-node tests/demo.test.mjs      <span class="c"># starts its own php -S, runs both backends, restores demo/lang/</span>
-node tests/a11y.test.mjs      <span class="c"># WCAG 2.1 AA audit of the demo and docs with axe-core</span></code></pre>
-    <div class="warn"><p>The PHP backend is for trying things out on your own machine. It only answers requests from localhost or private network addresses (a check that any reverse proxy defeats, since it sees the proxy's address) and from its own pages (<code>Sec-Fetch-Site</code> / <code>Origin</code>, so another website open in your browser can't write to the files), and must not be deployed on a public server.</p></div>
-
-    <!-- ================================================================== -->
-    <h2 id="limits">Limits</h2>
-    <ul>
-      <li><strong>Shadow roots and iframes.</strong> Highlighting is done with a page-level stylesheet and elements are found with <code>querySelectorAll</code>, so text inside a web component's shadow root or inside an <code>&lt;iframe&gt;</code> is neither highlighted nor listed. Initialise a separate helper inside the iframe if you need it there.</li>
-      <li><strong>ICU plurals and selects.</strong> The default <code>placeholderPattern</code> matches <code>{name}</code>, <code>{{name}}</code>, <code>%s</code> and <code>%1$s</code>. A whole ICU argument such as <code>{count, plural, one {# item} other {# items}}</code> is not matched, so the editor won't notice when one is dropped. If your strings use ICU syntax, pass a pattern that fits them, e.g. <code>/\{\s*\w+\s*(?:,[^{}]*(?:\{[^{}]*\}[^{}]*)*)?\}/g</code>, or <code>null</code> to switch the check off.</li>
-      <li><strong>Missing counts</strong> only know about the page language (via <code>missingAttribute</code>), not about gaps in other languages.</li>
-    </ul>
-
-    <!-- ================================================================== -->
-    <h2 id="support">Browser support</h2>
-    <p>Current versions of Chrome, Edge, Firefox and Safari (desktop and mobile). The plugin uses <code>&lt;dialog&gt;</code>, Shadow DOM, <code>:is()</code> and ES2020, and has no dependencies. TypeScript declarations ship in <code>dist/ktranslationhelper.d.ts</code>. Building <code>dist/</code> from <code>src/</code> needs Node 18+ (<code>node build.mjs</code>); using the plugin needs nothing.</p>
+        </div>
+      </div>
+    </section>
   </main>
-</div>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p data-i18n="footer.licence">kTranslationHelper is open source under the MIT licence.</p>
+    </div>
+  </footer>
 </body>
 </html>
