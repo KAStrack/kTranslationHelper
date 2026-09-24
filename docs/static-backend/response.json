@@ -1,4 +1,4 @@
 {
   "ok": false,
-  "message": "The demo page does not have a backend, so updates are not saved."
+  "message": "The demo page does not have a backend, so updates are not permanently saved and will disappear on the next page load"
 }
